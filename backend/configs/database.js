@@ -1,13 +1,13 @@
 import { Sequelize } from "sequelize";
 
 const db = new Sequelize(
-  process.env.DB_NAME || "crud-db-1", // Nome do banco de dados
+  "crud_db", // Nome do banco de dados
   process.env.DB_USER || "root", // Usuário do banco de dados
   process.env.DB_PASSWORD || "12345678", // Senha do banco de dados
   {
     host: process.env.DB_HOST || "db", // Usar "db" para Docker ou "localhost" localmente
     dialect: "mysql", // Tipo de banco de dados
-    port: 3306, // Porta do MySQL
+    port: 3307, // Porta do MySQL
   }
 );
 

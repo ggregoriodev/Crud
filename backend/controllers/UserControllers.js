@@ -1,67 +1,85 @@
 import User from "../models/UserModel.js";
+import createHttpError from "http-errors";
 
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
   try {
     const response = await User.findAll();
-    res.status(200).json(response); //200 é o status code, que significa que a requisição foi bem-sucedida.
-    //  O resultado fica guardado na variável response.
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
 
-export const getUserById = async (req, res) => {
-  try {
-    const response = await User.findOne({
-      //findOne é um método do Sequelize que retorna o primeiro registro que satisfaz a condição.
-      where: {
-        id: req.params.id, //req.params.id é o id que vem da rota, que é o id do usuário que queremos buscar.
-      },
-    });
+    if (!response.length) {
+      return next(createHttpError(404, "Nenhum usuário encontrado"));
+    }
+
     res.status(200).json(response);
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal Server Error" }); //
+    next(createHttpError(500, "Erro interno ao buscar usuários"));
   }
 };
 
-export const CreateUser = async (req, res) => {
+export const getUserById = async (req, res, next) => {
   try {
-    await User.create(req.body); // o req.body é o corpo da requisição, que é o objeto que contém os dados do usuário que queremos criar.
-    res.status(201).json({ message: "User Created" }); //201 é o status code, que significa que a requisição foi bem-sucedida.
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal Server Error" }); //
-  }
-};
-
-//adiconar depois https codes, para erros.
-
-export const UpdateUser = async (req, res) => {
-  try {
-    await User.update(req.body, {
+    const response = await User.findOne({
       where: {
         id: req.params.id,
       },
     });
-    res.status(200).json({ message: "User Updated" });
+
+    if (!response) {
+      return next(createHttpError(404, "Nenhum usuário encontrado"));
+    }
+
+    res.status(200).json(response);
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(createHttpError(500, "Erro interno ao buscar usuário"));
   }
 };
 
-export const DeleteUser = async (req, res) => {
+export const CreateUser = async (req, res, next) => {
   try {
-    await User.destroy({
+    const affectedRows = await User.create(req.body);
+
+    if (affectedRows[0] === 0) {
+      return next(createHttpError(404, "Usuário nçao criado tente novamente"));
+    }
+    res.status(201).json({ message: "User Criado" });
+  } catch (error) {
+    next(createHttpError(500, "Erro interno ao Criar usuários"));
+  }
+};
+
+export const UpdateUser = async (req, res, next) => {
+  try {
+    const affectedRows = await User.update(req.body, {
       where: {
         id: req.params.id,
       },
     });
-    res.status(200).json({ message: "User deleted" });
+
+    if (affectedRows[0] === 0) {
+      return next(createHttpError(404, "Id não encontrado"));
+    }
+
+    res.status(200).json({ message: "User atualizado" });
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(createHttpError(500, "Erro interno ao atualizar usuários"));
+  }
+};
+
+export const DeleteUser = async (req, res, next) => {
+  try {
+    const affectedRows = await User.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    if (affectedRows === 0) {
+      return next(createHttpError(404, "Id não encontrado"));
+    }
+
+    res.status(200).json({ message: "User Deletado" });
+  } catch (error) {
+    console.log(error.message);
+    next(createHttpError(500, "Erro interno ao deletar usuários"));
   }
 };

@@ -18,4 +18,6 @@ app.listen(port, () => {
   console.log(`rodando em ${port}. vá para http://localhost:${port}`);
 });
 
-app.get("/", (req, res) => {});
+app.get("/", (req, res) => {
+  res.send("API");
+});
