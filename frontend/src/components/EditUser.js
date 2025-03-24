@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { emailValidation } from "../Functions/emailvalidation";
 
 const EditUser = () => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [idade, setIdade] = useState("");
   const [cpf, setCPF] = useState("");
+  const [isValid, setisValid] = useState(null);
+
   const navigate = useNavigate();
   const { id } = useParams();
 
   useEffect(() => {
     getUserById();
   }, []);
+
+  const handleEmailChange = (e) => {
+    const email = e.target.value; // Obtém o valor do input
+    setEmail(email); // Atualiza o estado do e-mail
+    setisValid(emailValidation(email)); // Atualiza o estado da validade do e-mail
+  };
 
   const SaveUser = async (e) => {
     e.preventDefault(); //Evita que a página recarregue quando o formulário for enviado.
@@ -66,10 +75,15 @@ const EditUser = () => {
                 type="text"
                 className="input"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 placeholder="Email"
               />
             </div>
+            {isValid === null ? null : (
+              <p className={`help ${isValid ? "is-success" : "is-danger"}`}>
+                {isValid ? "E-mail válido!" : "E-mail inválido!"}
+              </p>
+            )}
           </div>
 
           <div className="field">

@@ -2,15 +2,30 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+import { emailValidation } from "../Functions/emailvalidation";
+
 const AddUser = () => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [idade, setIdade] = useState("");
   const [cpf, setCPF] = useState("");
+  const [emailIsValid, setEmailIsValid] = useState(null);
+
   const navigate = useNavigate();
 
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    setEmail(email);
+    setEmailIsValid(emailValidation(email));
+  };
+
   const SaveUser = async (e) => {
-    e.preventDefault(); //Evita que a página recarregue quando o formulário for enviado.
+    e.preventDefault();
+    if (!emailIsValid) {
+      alert("Por favor, insira um e-mail válido.");
+      return;
+    }
+
     try {
       await axios.post("http://localhost:3000/users", {
         nome,
@@ -18,8 +33,7 @@ const AddUser = () => {
         idade,
         cpf,
       });
-      navigate("/"); //Depois de salvar os dados, leva o usuário de volta para a página inicial.
-      //Essa função vem do useNavigate (do React Router) e serve para mudar de página sem precisar recarregar o site.
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
@@ -30,42 +44,43 @@ const AddUser = () => {
       <div className="column is-half">
         <form onSubmit={SaveUser}>
           <div className="field">
-            <label htmlFor="" className="label">
-              Nome
-            </label>
+            <label className="label">Nome</label>
             <div className="control">
               <input
-                type="text"
+                type="name"
                 className="input"
                 value={nome}
-                onChange={(e) => setNome(e.target.value)} //Agora, sempre que o usuário digitar no campo, onChange chama setIdade(e.target.value), que atualiza Idade com o novo valor.
+                onChange={(e) => setNome(e.target.value)}
                 placeholder="Nome"
               />
             </div>
           </div>
 
           <div className="field">
-            <label htmlFor="" className="label">
-              Email
-            </label>
+            <label className="label">Email</label>
             <div className="control">
               <input
-                type="text"
+                type="email"
                 className="input"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 placeholder="Email"
               />
             </div>
+            {emailIsValid !== null && (
+              <p
+                className={`help ${emailIsValid ? "is-success" : "is-danger"}`}
+              >
+                {emailIsValid ? "E-mail válido!" : "E-mail inválido!"}
+              </p>
+            )}
           </div>
 
           <div className="field">
-            <label htmlFor="" className="label">
-              Idade
-            </label>
+            <label className="label">Idade</label>
             <div className="control">
               <input
-                type="text"
+                type="number"
                 className="input"
                 value={idade}
                 onChange={(e) => setIdade(e.target.value)}
@@ -75,9 +90,7 @@ const AddUser = () => {
           </div>
 
           <div className="field">
-            <label htmlFor="" className="label">
-              CPF
-            </label>
+            <label className="label">CPF</label>
             <div className="control">
               <input
                 type="text"
@@ -88,9 +101,9 @@ const AddUser = () => {
               />
             </div>
           </div>
-          <div className="field"></div>
-          <button type="submit" className="button is-succes">
-            salvar
+
+          <button type="submit" className="button is-success">
+            Salvar
           </button>
         </form>
       </div>

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "express-error-handler": "^1.1.0",
+    "http-errors": "^2.0.0"
+  }
+}

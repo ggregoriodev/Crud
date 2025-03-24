@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, Links } from "react-router-dom";
+import { cpfMask } from "../Functions/cpfmask";
 
 const Userlist = () => {
   const [users, setUser] = useState([]);
@@ -50,7 +51,7 @@ const Userlist = () => {
                 <td>{user.nome}</td>
                 <td>{user.email}</td>
                 <td>{user.idade}</td>
-                <td>{user.cpf}</td>
+                <td>{cpfMask(user.cpf)}</td>
                 <td>
                   <Link
                     to={`edit/${user.id}`}
