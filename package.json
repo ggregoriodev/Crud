@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "amqplib": "^0.10.7",
     "express-error-handler": "^1.1.0",
     "http-errors": "^2.0.0"
   }
