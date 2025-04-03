@@ -1,5 +1,4 @@
 import { Sequelize } from "sequelize";
-
 const db = new Sequelize(
   "crud_db", // Nome do banco de dados
   process.env.DB_USER || "root", // Usuário do banco de dados
